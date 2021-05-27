@@ -3,34 +3,62 @@ import requests
 import re
 from bs4 import BeautifulSoup
 
-
-user_input = input ("Enter the token name:")
-# coins_list = ['ripple']
+################
+source_new = requests.get(f'https://coinmarketcap.com/new/').text
+soup_4 = BeautifulSoup(source_new, 'lxml')
+card_5 = soup_4.find('tbody')
+print('--- New Release Tokens ---')
+for td in card_5.find_all('tr')[:3]:
+    new_num = td.select_one('td:nth-child(2)', style='text').text
+    new_name = td.select_one('td:nth-child(3)', style='text').a.div.div.p.text
+    new_symbol = td.select_one('td:nth-child(3)', style='text').a.div.div.div.p.text
+    new_img = td.select_one('td:nth-child(3)', style='text').a.div.img['src']
+    new_price = td.select_one('td:nth-child(4)', style='text').text
+    new_change1hr = td.select_one('td:nth-child(5)', style='text').span.text
+    new_change24hr = td.select_one('td:nth-child(6)', style='text').span.text
+    new_volume = td.select_one('td:nth-child(8)', style='text').text
+    new_chain = td.select_one('td:nth-child(9)', style='text').div.text
+    new_release = td.select_one('td:nth-child(10)', style='text').text
+    new_hash_url = td.select_one('td:nth-child(3)', style='text').a['href']
+    print(f'Released: {new_release}')
+    print(f'--- *{new_name}* : {new_symbol} ---')
+    print(f'Token Image URL: {new_img}')
+    print(f'Price: {new_price}')
+    print(f'% Change 1hr: % {new_change1hr}')
+    print(f'% Change 24hr: % {new_change24hr}')
+    print(f'Volume: {new_volume}')
+    print(f'Blockchain: {new_chain}')
+    print(f'Hash url: https://coinmarketcap.com{new_hash_url}')
+    print('------')
+################
+# user_input = input ("Enter the token name:")
+user_input = ['ripple']
 
 def coin_scan(user_input):
-    ### urls ###
+    ### CMC urls ###
     url_query = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest'
-    url_top = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest'
+    url_latest = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest'
     url_meta = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/info'
     url_idmap = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/map'
     url_fiat = 'https://pro-api.coinmarketcap.com/v1/fiat/map' 
-
-    ### api key ###
+    ### CMC api key ###
     headers = {
         'Accepts': 'application/json',
         'X-CMC_PRO_API_KEY' : apikey.apikey,
     }
-
     ### parameters ###
     params = {
     'slug' : user_input,
     }
-
-    # ata = requests.get(url_latest, params=params , headers=headers).json()
     query_data = requests.get(url_query, params=params , headers=headers).json()
-    params = {
-    'slug' : user_input,
-    }
+####################
+    # source_new = requests.get(f'https://coinmarketcap.com/new/').text
+    # soup_4 = BeautifulSoup(source_new, 'lxml')
+    # card_5 = soup_4.find('table')
+    # for tr in card_5.find_all('tr'):
+    #     for td in tr:
+
+    #         print(tr.text)
 ####################
     coins_query = query_data['data']
     meta_data = requests.get(url_meta, params=params , headers=headers).json()
