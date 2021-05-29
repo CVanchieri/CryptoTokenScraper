@@ -4,6 +4,7 @@ import re
 from bs4 import BeautifulSoup
 
 ################
+### scraping new tokens ### 
 source_new = requests.get(f'https://coinmarketcap.com/new/').text
 soup_4 = BeautifulSoup(source_new, 'lxml')
 card_5 = soup_4.find('tbody')
@@ -31,10 +32,12 @@ for td in card_5.find_all('tr')[:3]:
     print(f'Hash url: https://coinmarketcap.com{new_hash_url}')
     print('------')
 ################
-# user_input = input ("Enter the token name:")
-user_input = ['ripple']
+### take user input ###
+user_input = input ("Enter the token name:")
+# user_input = ['']
 
-def coin_scan(user_input):
+### function to scrape sites for coin ###
+def bsc_coin_scrape(user_input):
     ### CMC urls ###
     url_query = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest'
     url_latest = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest'
@@ -48,18 +51,10 @@ def coin_scan(user_input):
     }
     ### parameters ###
     params = {
-    'slug' : user_input,
+    'symbol' : user_input,
     }
+####################
     query_data = requests.get(url_query, params=params , headers=headers).json()
-####################
-    # source_new = requests.get(f'https://coinmarketcap.com/new/').text
-    # soup_4 = BeautifulSoup(source_new, 'lxml')
-    # card_5 = soup_4.find('table')
-    # for tr in card_5.find_all('tr'):
-    #     for td in tr:
-
-    #         print(tr.text)
-####################
     coins_query = query_data['data']
     meta_data = requests.get(url_meta, params=params , headers=headers).json()
     params = {
@@ -85,13 +80,16 @@ def coin_scan(user_input):
                 for x in value2['urls']['explorer']:
                     if x.count('bscscan') == 1:
                         bsc_url = x
-                        hash_num = bsc_url[26:]
-                    elif x.count('coinmarket') == 1:
-                        cmc_url = x
                     elif x.count('blockchair') == 1:
                         blockchair_url = x
+                    elif x.count('etherscan') == 1:
+                        etherscan_url = x
+                    elif x.count('ethplorer') == 1:
+                          ethplorer_url = x
 ############################################################################################################
-            source_info = requests.get(f'https://bscscan.com/token/{hash_num}').text
+            if bsc_url != None:
+                hash_num = bsc_url[26:]
+                source_info = requests.get(f'https://bscscan.com/token/{hash_num}').text
             source_holders = requests.get(f'https://bscscan.com/token/tokenholderchart/{hash_num}').text
             source_description = requests.get(f'https://bscscan.com/token/{hash_num}#tokenInfo').text
             soup_1 = BeautifulSoup(source_info, 'lxml')
@@ -122,15 +120,16 @@ def coin_scan(user_input):
             header2 = card_3.find('div', class_='col-md-6').text
             name = blockchair_url.split('.com/', 1)
             token_name = name[1].upper()
-####################            
+###################            
+## prints ### 
             print('*****')
-            print(f"--- *{token}* : {token_name} ---")
+            print(f"--- *{token}* {token_name} : Price Info ---")
             print('Token Image Url:', logo)
             print('Token Description:', description[9:])
-            print(f'Price $ {price}')
+            print(f'Price: $ {price}')
             print('Total Supply:', "{:,}".format(float(total_supply)))
             print('Circulating Supply:', c_supply[10:-1])
-            print('24hr Volume:', "{:,}".format(volume_24h))
+            print('24hr Volume: ' "$ " "{:,}".format(volume_24h))
             print(f'% Change 1hr:   % {change_1h}')
             print(f'% Change 24hr:  % {change_24h}')
             print(f'% Change 7d:    % {change_7d}')
@@ -138,20 +137,27 @@ def coin_scan(user_input):
             print(f'% Change 60d:   % {change_60d}')
             print(f'% Change 90d:   % {change_90d}')
             print(f'Token Hash: {hash_num}')
-            print('BSC Hash Url:', [bsc_url])
-            print('BlockChair Url:', [blockchair_url])
+            if bsc_url != None:
+                print('BSC Hash Url:', [bsc_url])
+                print('BlockChair Url:', [blockchair_url])
+            else: 
+                print('Etherscan Url:', [etherscan_url])
+                print('Ethplorer Url:', [ethplorer_url])
             print('Technical doc url:', value2['urls']['technical_doc'])
             print('Announcements url:', value2['urls']['announcement'])
             print('Source code url:', value2['urls']['source_code'])
             print(f'Website URL: {[url]}')
+
             print('*****')
+            print(f"--- *{token}* {token_name} : Holders Info ---")
             print(f'Number of Holders: {holders[1:-1]}')
             print(f'- {ta}')
             print(f'- {header2[1:]}')
             print('-----')
             print(f"--- Top 10 {token} Holders ---")
 ####################
-            for addre in card_2.find_all('tr')[:11]:
+### token holder ###
+            for addre in card_2.find_all('tr')[:6]:
                 if addre.select_one('td:nth-child(1)') != None:
                     rank = addre.select_one('td:nth-child(1)').contents[0]
                     print(f'Rank: {rank}')
@@ -182,4 +188,4 @@ def coin_scan(user_input):
                         print(f'Percentage: {percentage}')
                     print('-----')
 
-coin_scan(user_input)
+bsc_coin_scrape(user_input)
