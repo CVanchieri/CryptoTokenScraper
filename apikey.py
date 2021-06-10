@@ -1,3 +1,0 @@
-### CMC Key ###
-cmc_apikey = '1d695303-9577-49cb-a634-228bc13b50fb'
-eth_apikey = 'TXHSD1XS34ZT684ZVEUYZBPADBTY6PDAKF'

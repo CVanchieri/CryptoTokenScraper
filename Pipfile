@@ -4,12 +4,17 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+psycopg2-binary = "*"
+python-dotenv = "*"
 requests = "*"
 beautifulsoup4 = "*"
 lxml = "*"
 regex = "*"
+tweepy = "*"
+pandas = "*"
+datetime = "*"
 
 [dev-packages]
 
 [requires]
-python_version = "3.9"
+python_version = "3.8"
