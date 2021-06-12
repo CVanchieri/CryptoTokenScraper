@@ -333,8 +333,8 @@ REDsecret_key = os.getenv("RED_SECRET_KEY")
 auth = requests.auth.HTTPBasicAuth(REDclient_id, REDsecret_key)
 data = {
         'grant_type': 'password',
-        'username': 'GnarlyCharley6',
-        'password': 'Charryn84',
+        'username': '########',
+        'password': '########',
         }
 headers = {'User-Agent': 'MyAPI/0.0.1'}
 print('--- searching reddit posts ---')
